@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RabbitMQ.Basic.Producer
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
