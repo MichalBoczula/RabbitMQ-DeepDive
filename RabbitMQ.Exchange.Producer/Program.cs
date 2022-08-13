@@ -10,16 +10,12 @@ namespace RabbitMQ.Exchange.Producer
     {
         static void Main(string[] args)
         {
-            ProduceMessagesToDirectExchange();
+            ProduceMessagesToTopicExchange();
         }
 
-        static void ProduceMessagesToQueue()
+        static void ProduceMessagesToTopicExchange()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            Producer.ProduceMessagesToQueue(channel);
+            TopicProducer.ProduceMessageOnTopicExchange();
         }
 
         static void ProduceMessagesToDirectExchange()
@@ -37,7 +33,16 @@ namespace RabbitMQ.Exchange.Producer
             channel.QueueDeclare(queue: queue, true, false, false, null);
             channel.QueueBind(queue, exchange, routingKey);
 
-            Producer.ProduceMessageToDirectExchange(channel, exchange, routingKey);
+            DirectProducer.ProduceMessageToDirectExchange(channel, exchange, routingKey);
+        }
+
+        static void ProduceMessagesToQueue()
+        {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            Producer.ProduceMessagesToQueue(channel);
         }
     }
 }

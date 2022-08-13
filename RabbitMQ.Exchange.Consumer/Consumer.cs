@@ -10,24 +10,6 @@ namespace RabbitMQ.Exchange.Consumer
 {
     public static class Consumer
     {
-        public static void ConsumeMessageFromDiectQueue(IModel channel, string queue)
-        {
-            var consumer = new EventingBasicConsumer(channel);
-
-            consumer.Received += (sender, e) =>
-            {
-                var body = e.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine($"Message: {message}");
-            };
-
-
-            channel.BasicConsume(queue: queue,
-                                 autoAck: true,
-                                 consumer: consumer);
-            Console.ReadLine();
-        }
-
         public static void ConsumeMessageFromQueue(IModel channel)
         {
             channel.QueueDeclare(queue: "first-queue",

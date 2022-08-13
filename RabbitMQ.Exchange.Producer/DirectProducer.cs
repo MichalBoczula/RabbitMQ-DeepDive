@@ -1,5 +1,4 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -10,16 +9,10 @@ using System.Threading.Tasks;
 
 namespace RabbitMQ.Exchange.Producer
 {
-    public static class Producer
+    public static class DirectProducer
     {
-        public static void ProduceMessagesToQueue(IModel channel)
+        public static void ProduceMessageToDirectExchange(IModel channel, string exchange, string routingKey)
         {
-            channel.QueueDeclare(queue: "first-queue",
-                                 durable: true,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-
             var props = channel.CreateBasicProperties();
             props.Persistent = true;
 
@@ -28,8 +21,8 @@ namespace RabbitMQ.Exchange.Producer
 
             while (true)
             {
-                channel.BasicPublish(exchange: "",
-                             routingKey: "first-queue",
+                channel.BasicPublish(exchange: exchange,
+                             routingKey: routingKey,
                              basicProperties: null,
                              body: body);
 

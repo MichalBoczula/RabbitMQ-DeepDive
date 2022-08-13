@@ -1,5 +1,4 @@
-﻿
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -10,26 +9,25 @@ using System.Threading.Tasks;
 
 namespace RabbitMQ.Exchange.Producer
 {
-    public static class Producer
+    internal static class TopicProducer
     {
-        public static void ProduceMessagesToQueue(IModel channel)
+        public static void ProduceMessageOnTopicExchange()
         {
-            channel.QueueDeclare(queue: "first-queue",
-                                 durable: true,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var exchange = "topicExchange";
 
-            var props = channel.CreateBasicProperties();
-            props.Persistent = true;
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            channel.ExchangeDeclare(exchange, ExchangeType.Topic, true, false, null);
 
             var message = new { Name = "hello", Message = "What's up bro!?" };
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
 
             while (true)
             {
-                channel.BasicPublish(exchange: "",
-                             routingKey: "first-queue",
+                channel.BasicPublish(exchange: exchange,
+                             routingKey: "topic.update",
                              basicProperties: null,
                              body: body);
 
