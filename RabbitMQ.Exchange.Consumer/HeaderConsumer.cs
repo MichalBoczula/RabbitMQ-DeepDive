@@ -10,7 +10,7 @@ namespace RabbitMQ.Exchange.Consumer
 {
     internal class HeaderConsumer
     {
-        public static void ConsumeMessageFromTopicExchange()
+        public static void ConsumeMessageFromHeaderExchange()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var queue = "headerQueueFirst";

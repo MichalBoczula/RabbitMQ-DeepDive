@@ -7,12 +7,17 @@ namespace RabbitMQ.Exchange.Consumer
     {
         static void Main(string[] args)
         {
-            ConsumeMessageFromTopicExchange();
+            ConsumeMessageFromHeaderExchange();
         }
 
-        private static void ConsumeMessageFromTopicExchange()
+        private static void ConsumeMessageFromFanoutExchange()
         {
-            HeaderConsumer.ConsumeMessageFromTopicExchange();
+            FanoutConsumer.ConsumeMessageFromFanoutExchange();
+        }
+
+        private static void ConsumeMessageFromHeaderExchange()
+        {
+            HeaderConsumer.ConsumeMessageFromHeaderExchange();
         }
 
         static void ConsumeMessagesFromTopicExchange()

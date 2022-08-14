@@ -7,17 +7,56 @@ using System.Text;
 
 namespace RabbitMQ.Exchange.SecondConsumer
 {
-    class Program
+    internal static class Program
     {
         static void Main(string[] args)
+        {
+            ConsumeMessageFromHeaderExchange();
+        }
+
+        private static void ConsumeMessageFromFanoutExchange()
+        {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var queue = "fanoutQueueSecond";
+            var exchange = "fanoutExchange";
+            var routingKey = "top secret";
+            var connection = factory.CreateConnection();
+            var channel = connection.CreateModel();
+            channel.QueueDeclare(queue: queue, true, false, false, null);
+
+            var header = new Dictionary<string, object>
+            {
+                { "tutaj", "heder"},
+                { "jest", "bro"}
+            };
+            channel.QueueBind(queue, exchange, routingKey, header);
+
+            var props = channel.CreateBasicProperties();
+            props.Persistent = true;
+            var consumer = new EventingBasicConsumer(channel);
+
+            consumer.Received += (sender, e) =>
+            {
+                var body = e.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                //e.BasicProperties.Headers.Keys.Select(x => x).ToList().ForEach(x => Console.WriteLine(x));
+                Console.WriteLine($"Message: {message}");
+            };
+
+            channel.BasicConsume(queue: queue,
+                                    autoAck: true,
+                                    consumer: consumer);
+            Console.ReadLine();
+        }
+
+        private static void ConsumeMessageFromHeaderExchange()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var queue = "headerQueueSecond";
             var exchange = "headerExchange";
-            var routingKey = string.Empty;
-
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
+            var routingKey = "rawrrr";
+            var connection = factory.CreateConnection();
+            var channel = connection.CreateModel();
             channel.QueueDeclare(queue: queue, true, false, false, null);
 
             var header = new Dictionary<string, object>
@@ -44,7 +83,7 @@ namespace RabbitMQ.Exchange.SecondConsumer
             Console.ReadLine();
         }
 
-        private static void ConsumeMessageFromTopicQueue()
+        private static void ConsumeMessageFromTopicExchange()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var queue = "topicQueueSecond";

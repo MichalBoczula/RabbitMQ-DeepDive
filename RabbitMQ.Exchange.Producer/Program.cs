@@ -10,12 +10,17 @@ namespace RabbitMQ.Exchange.Producer
     {
         static void Main(string[] args)
         {
-            PublishMessageToHeaderExchange();
+            ProduceMessageToHeaderExchange();
         }
 
-        private static void PublishMessageToHeaderExchange()
+        private static void ProduceMessageToFanoutExchange()
         {
-            HeaderProducer.PublishMessageToHeaderExchange();
+            FanoutProducer.ProduceMessageToFanoutExchange();
+        }
+
+        private static void ProduceMessageToHeaderExchange()
+        {
+            HeaderProducer.ProduceMessageToHeaderExchange();
         }
 
         static void ProduceMessagesToTopicExchange()

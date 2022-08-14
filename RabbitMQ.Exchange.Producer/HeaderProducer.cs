@@ -11,7 +11,7 @@ namespace RabbitMQ.Exchange.Producer
 {
     internal class HeaderProducer
     {
-        public static void PublishMessageToHeaderExchange()
+        public static void ProduceMessageToHeaderExchange()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var exchange = "headerExchange";
