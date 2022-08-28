@@ -10,7 +10,7 @@ namespace RabbitMQ.Exchange.Producer
     {
         static void Main(string[] args)
         {
-            ProduceMessageToHeaderExchange();
+            ProduceMessageToFanoutExchange();
         }
 
         private static void ProduceMessageToFanoutExchange()

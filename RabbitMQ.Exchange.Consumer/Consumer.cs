@@ -10,8 +10,12 @@ namespace RabbitMQ.Exchange.Consumer
 {
     public static class Consumer
     {
-        public static void ConsumeMessageFromQueue(IModel channel)
+        public static void ConsumeMessageFromQueue()
         {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel(); 
+
             channel.QueueDeclare(queue: "first-queue",
                                  durable: true,
                                  exclusive: false,

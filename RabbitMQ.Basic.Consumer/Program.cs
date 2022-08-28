@@ -13,12 +13,6 @@ namespace RabbitMQ.Basic.Consumer
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
-            channel.QueueDeclare(queue: "first-queue",
-                                 durable: true,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-
             var consumer = new EventingBasicConsumer(channel);
 
             consumer.Received += (sender, e) =>
@@ -29,7 +23,7 @@ namespace RabbitMQ.Basic.Consumer
             };
 
             channel.BasicConsume(queue: "first-queue",
-                                 autoAck: true,
+                                 autoAck: true, //!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                  consumer: consumer);
             
             Console.ReadLine();

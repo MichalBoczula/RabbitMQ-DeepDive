@@ -7,7 +7,7 @@ namespace RabbitMQ.Exchange.Consumer
     {
         static void Main(string[] args)
         {
-            ConsumeMessageFromHeaderExchange();
+            ConsumeMesasgeFromQueue();
         }
 
         private static void ConsumeMessageFromFanoutExchange()
@@ -27,22 +27,12 @@ namespace RabbitMQ.Exchange.Consumer
 
         static void ConsumeMessageFromDiectQueue()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            var queue = "directQueue";
-
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            DirectConsumer.ConsumeMessageFromDiectQueue(channel, queue);
+            DirectConsumer.ConsumeMessageFromDiectQueue();
         }
 
         static void ConsumeMesasgeFromQueue()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            Consumer.ConsumeMessageFromQueue(channel);
+            Consumer.ConsumeMessageFromQueue();
         }
     }
 }

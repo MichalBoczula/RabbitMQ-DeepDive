@@ -10,8 +10,14 @@ namespace RabbitMQ.Exchange.Consumer
 {
     public static class DirectConsumer
     {
-        public static void ConsumeMessageFromDiectQueue(IModel channel, string queue)
+        public static void ConsumeMessageFromDiectQueue()
         {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var queue = "directQueue";
+
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
             var consumer = new EventingBasicConsumer(channel);
 
             consumer.Received += (sender, e) =>

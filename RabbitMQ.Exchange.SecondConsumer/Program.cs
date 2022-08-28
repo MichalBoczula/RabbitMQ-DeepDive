@@ -11,7 +11,29 @@ namespace RabbitMQ.Exchange.SecondConsumer
     {
         static void Main(string[] args)
         {
-            ConsumeMessageFromHeaderExchange();
+            ConsumeMessage();
+        }
+
+        private static void ConsumeMessage()
+        {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            var consumer = new EventingBasicConsumer(channel);
+
+            consumer.Received += (sender, e) =>
+            {
+                var body = e.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                Console.WriteLine($"Message: {message}");
+            };
+
+            channel.BasicConsume(queue: "first-queue",
+                                 autoAck: true, //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                 consumer: consumer);
+
+            Console.ReadLine();
         }
 
         private static void ConsumeMessageFromFanoutExchange()

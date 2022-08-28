@@ -16,13 +16,13 @@ namespace RabbitMQ.Basic.Producer
             using var channel = connection.CreateModel();
 
             channel.QueueDeclare(queue: "first-queue",
-                                 durable: true,
-                                 exclusive: false,
-                                 autoDelete: false,
+                                 durable: true, //!!!!!!!!!!!!!!
+                                 exclusive: false,//!!!!!!!!!!!! 
+                                 autoDelete: false,//!!!!!!!!!!!!!! 
                                  arguments: null);
             
             var props = channel.CreateBasicProperties();
-            props.Persistent = true;
+            props.Persistent = true; //!!!!!!!!!!!!!!
 
             string message = "What's up bro!?";
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
