@@ -11,7 +11,7 @@ namespace RabbitMQ.Exchange.SecondConsumer
     {
         static void Main(string[] args)
         {
-            ConsumeMessage();
+            ConsumeMessageFromHeaderExchange();
         }
 
         private static void ConsumeMessage()
@@ -41,7 +41,7 @@ namespace RabbitMQ.Exchange.SecondConsumer
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var queue = "fanoutQueueSecond";
             var exchange = "fanoutExchange";
-            var routingKey = "top secret";
+            var routingKey = "fadsbvadfsbedbfa";
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
             channel.QueueDeclare(queue: queue, true, false, false, null);
@@ -71,6 +71,30 @@ namespace RabbitMQ.Exchange.SecondConsumer
             Console.ReadLine();
         }
 
+        private static void ConsumeMessageFromDirectExchange()
+        {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var queue = "direct2Queue";
+
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            var consumer = new EventingBasicConsumer(channel);
+
+            consumer.Received += (sender, e) =>
+            {
+                var body = e.Body.ToArray();
+                var message = Encoding.UTF8.GetString(body);
+                Console.WriteLine($"Message: {message}");
+            };
+
+            channel.BasicConsume(queue: queue,
+                                    autoAck: true,
+                                    consumer: consumer);
+            Console.ReadLine();
+        }
+
+
         private static void ConsumeMessageFromHeaderExchange()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
@@ -95,7 +119,7 @@ namespace RabbitMQ.Exchange.SecondConsumer
             {
                 var body = e.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                //e.BasicProperties.Headers.Keys.Select(x => x).ToList().ForEach(x => Console.WriteLine(x));
+                e.BasicProperties.Headers.Keys.Select(x => x).ToList().ForEach(x => Console.WriteLine(x));
                 Console.WriteLine($"Message: {message}");
             };
 
@@ -113,7 +137,13 @@ namespace RabbitMQ.Exchange.SecondConsumer
             var routingKey = "topic.add";
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
-            channel.QueueDeclare(queue: queue, true, false, false, null);
+
+            var header = new Dictionary<string, object>
+            {
+                { "get", "get"},
+            };
+
+            channel.QueueDeclare(queue: queue, true, false, false, header);
             channel.QueueBind(queue, exchange, routingKey);
 
             var props = channel.CreateBasicProperties();

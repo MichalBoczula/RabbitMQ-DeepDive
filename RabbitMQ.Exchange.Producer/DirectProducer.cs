@@ -11,8 +11,20 @@ namespace RabbitMQ.Exchange.Producer
 {
     public static class DirectProducer
     {
-        public static void ProduceMessageToDirectExchange(IModel channel, string exchange, string routingKey)
+        public static void ProduceMessageToDirectExchange()
         {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var exchange = "directExchange";
+            var queue = "directQueue";
+            var routingKey = "direct";
+
+            using var connection = factory.CreateConnection();
+            using var channel = connection.CreateModel();
+
+            channel.ExchangeDeclare(exchange, ExchangeType.Direct, true, false, null);
+            channel.QueueDeclare(queue: queue, true, false, false, null);
+            channel.QueueBind(queue, exchange, routingKey);
+
             var props = channel.CreateBasicProperties();
             props.Persistent = true;
 

@@ -15,7 +15,7 @@ namespace RabbitMQ.Exchange.Consumer
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var queue = "fanoutQueueFirst";
             var exchange = "fanoutExchange";
-            var routingKey = "secret";
+            var routingKey = "fdsv dsav sadvas";
 
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();

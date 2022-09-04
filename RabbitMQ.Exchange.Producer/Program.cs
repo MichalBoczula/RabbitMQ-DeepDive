@@ -10,7 +10,7 @@ namespace RabbitMQ.Exchange.Producer
     {
         static void Main(string[] args)
         {
-            ProduceMessageToFanoutExchange();
+            ProduceMessageToHeaderExchange();
         }
 
         private static void ProduceMessageToFanoutExchange()
@@ -30,20 +30,7 @@ namespace RabbitMQ.Exchange.Producer
 
         static void ProduceMessagesToDirectExchange()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            var exchange = "directExchange";
-            var queue = "directQueue";
-            var routingKey = "direct";
-
-
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-            
-            channel.ExchangeDeclare(exchange, ExchangeType.Direct, true, false, null);
-            channel.QueueDeclare(queue: queue, true, false, false, null);
-            channel.QueueBind(queue, exchange, routingKey);
-
-            DirectProducer.ProduceMessageToDirectExchange(channel, exchange, routingKey);
+            DirectProducer.ProduceMessageToDirectExchange();
         }
 
         static void ProduceMessagesToQueue()

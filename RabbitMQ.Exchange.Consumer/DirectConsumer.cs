@@ -25,11 +25,11 @@ namespace RabbitMQ.Exchange.Consumer
                 var body = e.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine($"Message: {message}");
-
-                channel.BasicConsume(queue: queue,
-                                     autoAck: true,
-                                     consumer: consumer);
             };
+
+            channel.BasicConsume(queue: queue,
+                                    autoAck: true,
+                                    consumer: consumer);
 
             Console.ReadLine();
         }

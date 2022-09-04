@@ -36,7 +36,7 @@ namespace RabbitMQ.Exchange.Consumer
             {
                 var body = e.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                //e.BasicProperties.Headers.Keys.Select(x => x).ToList().ForEach(x => Console.WriteLine(x));
+                e.BasicProperties.Headers.Keys.Select(x => x).ToList().ForEach(x => Console.WriteLine(x));
                 Console.WriteLine($"Message: {message}");
             };
 

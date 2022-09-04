@@ -29,7 +29,7 @@ namespace RabbitMQ.Exchange.Producer
             {
                 { "add", "add" },
                 { "update", "update" },
-                { "get", "get" }
+                { "get", "get" },
             };
 
             while (true)
