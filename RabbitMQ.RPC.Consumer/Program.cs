@@ -33,10 +33,13 @@ namespace RabbitMQ.RPC.Consumer
 
                 channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
 
+
+                var answer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject("ACK"));
+
                 channel.BasicPublish(exchange: "",
                              routingKey: replyTo,
                              basicProperties: props,
-                             body: body);
+                             body: answer);
             };
 
             channel.BasicConsume(queue: msgQueue,

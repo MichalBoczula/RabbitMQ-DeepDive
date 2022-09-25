@@ -14,6 +14,8 @@ namespace RabbitMQ.RPC.Producer
     {
         public static void Main()
         {
+            var list = new List<string>();
+
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
@@ -33,17 +35,19 @@ namespace RabbitMQ.RPC.Producer
                                  autoDelete: false,
                                  arguments: null);
 
-            var props = channel.CreateBasicProperties();
-            props.Persistent = true;
-
-            props.CorrelationId = Guid.NewGuid().ToString();
-            props.ReplyTo = replyTo;
-
             string message = "rpc";
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
 
             while (true)
             {
+                var props = channel.CreateBasicProperties();
+                props.Persistent = true;
+
+                var correlatinoId = Guid.NewGuid().ToString();
+                list.Add(correlatinoId);
+                props.CorrelationId = correlatinoId;
+                props.ReplyTo = replyTo;
+
                 channel.BasicPublish(exchange: "",
                              routingKey: msgQueue,
                              basicProperties: props,
@@ -58,9 +62,14 @@ namespace RabbitMQ.RPC.Producer
 
                 consumer.Received += (sender, e) =>
                 {
-                    var body = e.Body.ToArray();
-
-                    Console.WriteLine($"Message: {message}");
+                    var answer = e.Body.ToArray();
+                    if (list.Contains(e.BasicProperties.CorrelationId.ToString()))
+                    {
+                        Console.WriteLine($"Message: {Encoding.UTF8.GetString(answer)}");
+                        Console.WriteLine($"Count: {list.Count}");
+                        list.Remove(e.BasicProperties.CorrelationId);
+                        Console.WriteLine($"Count: {list.Count}");
+                    }
                 };
 
                 Thread.Sleep(2000);
