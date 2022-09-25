@@ -14,19 +14,20 @@ namespace RabbitMQ.RPC.Producer
     {
         public static void Main()
         {
-
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
-            var consumer = new EventingBasicConsumer(channel);
+            
+            var replyTo = "AcknowledgeRPC";
+            var msgQueue = "MessageRPC";
 
-            channel.QueueDeclare(queue: "MessageRPC",
+            channel.QueueDeclare(queue: msgQueue,
                                  durable: true,
                                  exclusive: false,
                                  autoDelete: false,
                                  arguments: null);
 
-            channel.QueueDeclare(queue: "AcknowledgeRRPC",
+            channel.QueueDeclare(queue: replyTo,
                                  durable: true,
                                  exclusive: false,
                                  autoDelete: false,
@@ -36,7 +37,7 @@ namespace RabbitMQ.RPC.Producer
             props.Persistent = true;
 
             props.CorrelationId = Guid.NewGuid().ToString();
-            props.ReplyTo = "AcknowledgeRRPC";
+            props.ReplyTo = replyTo;
 
             string message = "rpc";
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
@@ -44,14 +45,23 @@ namespace RabbitMQ.RPC.Producer
             while (true)
             {
                 channel.BasicPublish(exchange: "",
-                             routingKey: "MessageRPC",
+                             routingKey: msgQueue,
                              basicProperties: props,
                              body: body);
+                
+                var consumer = new EventingBasicConsumer(channel);
 
-                //channel.BasicConsume(
-                //            consumer: consumer,
-                //            queue: props.ReplyTo,
-                //            autoAck: true);
+                channel.BasicConsume(
+                            consumer: consumer,
+                            queue: props.ReplyTo,
+                            autoAck: true);
+
+                consumer.Received += (sender, e) =>
+                {
+                    var body = e.Body.ToArray();
+
+                    Console.WriteLine($"Message: {message}");
+                };
 
                 Thread.Sleep(2000);
             }
