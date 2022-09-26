@@ -16,11 +16,14 @@ namespace RabbitMQ.RPC.Consumer
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var queue = "MessageRPC";
             var exchange = "RPCExchange";
+            var exchangeAck = "RpcExchangeAck";
             var routingKey = string.Empty;
 
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
             channel.QueueDeclare(queue: queue, true, false, false, null);
+
+            channel.ExchangeDeclare(exchangeAck, ExchangeType.Headers, true, false, null);
 
             var header = new Dictionary<string, object>
             {
@@ -30,17 +33,29 @@ namespace RabbitMQ.RPC.Consumer
 
             var props = channel.CreateBasicProperties();
             props.Persistent = true;
+            props.Headers = new Dictionary<string, object>
+            {
+                { "correlationAck", "correlationAck" },
+            };
             var consumer = new EventingBasicConsumer(channel);
 
             consumer.Received += (sender, e) =>
             {
                 var body = e.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine($"Message: {message}");
+                Console.WriteLine($"Message: {message} {e.BasicProperties.CorrelationId}");
+
+                Thread.Sleep(1000);
+                channel.BasicAck(e.DeliveryTag, multiple: false);
+                var id = Encoding.UTF8.GetBytes(e.BasicProperties.CorrelationId);
+                channel.BasicPublish(exchange: exchangeAck,
+                             routingKey: string.Empty,
+                             basicProperties: props,
+                             body: id);
             };
 
             channel.BasicConsume(queue: queue,
-                                    autoAck: true,
+                                    autoAck: false,
                                     consumer: consumer);
             Console.ReadLine();
 
