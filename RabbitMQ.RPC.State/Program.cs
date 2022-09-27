@@ -22,7 +22,10 @@ namespace RabbitMQ.RPC.State
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
             using var channelAck = connection.CreateModel();
+
+            channel.BasicQos(0, 1, true);
             channel.QueueDeclare(queue: queue, true, false, false, null);
+            channelAck.BasicQos(0, 1, true);
             channelAck.QueueDeclare(queueACK, true, false, false, null);
 
             var header = new Dictionary<string, object>

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,6 +10,9 @@ namespace RabbitMQ.RPC.Producer
 {
     class Program
     {
+        /// <summary>
+        /// Standard RPC
+        /// </summary>
         //public static void Main()
         //{
         //    var list = new List<string>();
@@ -73,6 +77,9 @@ namespace RabbitMQ.RPC.Producer
         //    }
         //}
 
+        /// <summary>
+        /// RPC with state machine
+        /// </summary>
         public static void Main()
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
@@ -85,7 +92,7 @@ namespace RabbitMQ.RPC.Producer
 
             var message = new { Name = "RPC", Message = "RPC" };
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
-            
+
             while (true)
             {
                 var props = channel.CreateBasicProperties();
